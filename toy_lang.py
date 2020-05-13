@@ -75,6 +75,7 @@ def define_command():
       returned_to_stack += 1
     else:
       # NEED TO FIX!!!! This is broken right now.
+      # UPDATE: Maybe not broken. Need to write test.
       need_len += max(0,(min_stack[com] - returned_to_stack))
       stack_len -= (min_stack[com] - returned[com])
       returned_to_stack = returned[com] + max(0,(returned_to_stack - min_stack[com]))
