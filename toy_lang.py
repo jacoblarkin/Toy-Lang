@@ -13,6 +13,9 @@ def initialize():
   print("\t +: add top two numbers on stack")
   print("\t -: negate top number on stack")
   print("\t<>: swap top two objects on stack")
+  print("\tcp: copy top object on stack")
+  print("\trt: rotate top 3 objects on stack")
+  print("\t      e.g.: a b c -> b c a")
   print("\t p: print top object on stack")
   print("\tp!: pop top object from stack and print it")
   print("\tpa: print the whole stack")
@@ -23,6 +26,8 @@ def initialize():
   commands["+"]  = ["+"]
   commands["-"]  = ["-"]
   commands["<>"] = ["<>"]
+  commands["cp"] = ["cp"]
+  commands["rt"] = ["rt"]
   commands["p"]  = ["p"]
   commands["p!"] = ["p!"]
   commands["pa"] = ["pa"]
@@ -32,6 +37,8 @@ def initialize():
   min_stack["+"]  = 2
   min_stack["-"]  = 1
   min_stack["<>"] = 2
+  min_stack["cp"] = 1
+  min_stack["rt"] = 3
   min_stack["p"]  = 1
   min_stack["p!"] = 1
   min_stack["pa"] = 0
@@ -40,6 +47,8 @@ def initialize():
   returned["+"]  = 1
   returned["-"]  = 1
   returned["<>"] = 2
+  returned["cp"] = 2
+  returned["rt"] = 3
   returned["p"]  = 1
   returned["p!"] = 0
   returned["pa"] = 0
@@ -101,6 +110,18 @@ def do_command(com):
       two = stack.pop()
       stack.append(one)
       stack.append(two)
+    elif com == "cp":
+      if not check_stack(min_stack[com]): return time_to_leave
+      one = stack[-1]
+      stack.append(one)
+    elif com == "rt":
+      if not check_stack(min_stack[com]): return time_to_leave
+      one = stack.pop()
+      two = stack.pop()
+      three = stack.pop()
+      stack.append(two)
+      stack.append(one)
+      stack.append(three)
     elif com in list(map(str, range(100))):
       stack.append(int(com))
     elif com == "p":
