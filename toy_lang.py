@@ -12,6 +12,8 @@ def initialize():
   print("Welcome to the test lang!!! Usefull commands are:")
   print("\t +: add top two numbers on stack")
   print("\t -: negate top number on stack")
+  print("\t r: repeat next command\n\t\t"+
+          "number of times defined by top element of stack")
   print("\t<>: swap top two objects on stack")
   print("\tcp: copy top object on stack")
   print("\trt: rotate top 3 objects on stack")
@@ -28,6 +30,7 @@ def initialize():
   commands["<>"] = ["<>"]
   commands["cp"] = ["cp"]
   commands["rt"] = ["rt"]
+  commands["r"]  = ["r"]
   commands["p"]  = ["p"]
   commands["p!"] = ["p!"]
   commands["pa"] = ["pa"]
@@ -39,6 +42,7 @@ def initialize():
   min_stack["<>"] = 2
   min_stack["cp"] = 1
   min_stack["rt"] = 3
+  min_stack["r"]  = 1
   min_stack["p"]  = 1
   min_stack["p!"] = 1
   min_stack["pa"] = 0
@@ -49,6 +53,7 @@ def initialize():
   returned["<>"] = 2
   returned["cp"] = 2
   returned["rt"] = 3
+  returned["r"]  = 0
   returned["p"]  = 1
   returned["p!"] = 0
   returned["pa"] = 0
@@ -75,19 +80,23 @@ def define_command():
   while True:
     com = input(prompt)
     if com == ".": break
-    if com not in commands and com not in numbers:
+    if com not in commands and com not in numbers and com[:2] != "r ":
       print("Unrecognized Command!!!")
+      continue
+    if not com[2:] in commands:
+      print("Could not find command "+com[2:])
       continue
     com_list.append(com)
     if com in numbers:
       stack_len += 1
       returned_to_stack += 1
-    else:
+    elif com[:2] != "r ":
       # NEED TO FIX!!!! This is broken right now.
       # UPDATE: Maybe not broken. Need to write test.
       need_len += max(0,(min_stack[com] - returned_to_stack))
       stack_len -= (min_stack[com] - returned[com])
       returned_to_stack = returned[com] + max(0,(returned_to_stack - min_stack[com]))
+  # min_stack and returned don't work with looping right now
   min_stack[to_define] = need_len
   returned[to_define] = max(0, stack_len)
   commands[to_define] = com_list
@@ -122,6 +131,15 @@ def do_command(com):
       stack.append(two)
       stack.append(one)
       stack.append(three)
+    elif com[:2] == "r ":
+      if not check_stack(min_stack["r"]): return time_to_leave
+      count = stack.pop()
+      repeated_command = com[2:]
+      if not repeated_command in commands: print("Could not find command "+repeated_command)
+      if count < 0: print("Negative count! Nothing was done.")
+      while count > 0:
+        count -= 1
+        time_to_leave = do_command(repeated_command)
     elif com in list(map(str, range(100))):
       stack.append(int(com))
     elif com == "p":
