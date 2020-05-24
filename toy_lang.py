@@ -14,6 +14,9 @@ def initialize():
   print("\t -: negate top number on stack")
   print("\t r: repeat next command\n\t\t"+
           "number of times defined by top element of stack")
+<<<<<<< HEAD
+=======
+>>>>>>> 5eda6c5a6a5dbfc2766c3037f93707489080d9f7
   print("\t<>: swap top two objects on stack")
   print("\tcp: copy top object on stack")
   print("\trt: rotate top 3 objects on stack")
@@ -28,9 +31,12 @@ def initialize():
   commands["+"]  = ["+"]
   commands["-"]  = ["-"]
   commands["<>"] = ["<>"]
+<<<<<<< HEAD
   commands["cp"] = ["cp"]
   commands["rt"] = ["rt"]
   commands["r"]  = ["r"]
+=======
+>>>>>>> 5eda6c5a6a5dbfc2766c3037f93707489080d9f7
   commands["p"]  = ["p"]
   commands["p!"] = ["p!"]
   commands["pa"] = ["pa"]
@@ -40,9 +46,12 @@ def initialize():
   min_stack["+"]  = 2
   min_stack["-"]  = 1
   min_stack["<>"] = 2
+<<<<<<< HEAD
   min_stack["cp"] = 1
   min_stack["rt"] = 3
   min_stack["r"]  = 1
+=======
+>>>>>>> 5eda6c5a6a5dbfc2766c3037f93707489080d9f7
   min_stack["p"]  = 1
   min_stack["p!"] = 1
   min_stack["pa"] = 0
@@ -51,9 +60,12 @@ def initialize():
   returned["+"]  = 1
   returned["-"]  = 1
   returned["<>"] = 2
+<<<<<<< HEAD
   returned["cp"] = 2
   returned["rt"] = 3
   returned["r"]  = 0
+=======
+>>>>>>> 5eda6c5a6a5dbfc2766c3037f93707489080d9f7
   returned["p"]  = 1
   returned["p!"] = 0
   returned["pa"] = 0
@@ -119,6 +131,7 @@ def do_command(com):
       two = stack.pop()
       stack.append(one)
       stack.append(two)
+<<<<<<< HEAD
     elif com == "cp":
       if not check_stack(min_stack[com]): return time_to_leave
       one = stack[-1]
@@ -131,6 +144,8 @@ def do_command(com):
       stack.append(two)
       stack.append(one)
       stack.append(three)
+=======
+>>>>>>> 5eda6c5a6a5dbfc2766c3037f93707489080d9f7
     elif com[:2] == "r ":
       if not check_stack(min_stack["r"]): return time_to_leave
       count = stack.pop()
@@ -140,6 +155,9 @@ def do_command(com):
       while count > 0:
         count -= 1
         time_to_leave = do_command(repeated_command)
+<<<<<<< HEAD
+=======
+>>>>>>> 5eda6c5a6a5dbfc2766c3037f93707489080d9f7
     elif com in list(map(str, range(100))):
       stack.append(int(com))
     elif com == "p":
