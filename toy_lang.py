@@ -4,9 +4,62 @@ import sys
 
 stack = []
 commands = dict([])
-min_stack = dict([])
-returned = dict([])
 numbers = list(map(str, range(100)))
+
+class Command:
+    def __init__(self, name, fn, min_stack, returned):
+        self.name = name
+        self.fn = fn
+        self.min_stack = min_stack
+        self.returned = returned
+
+def plus():
+    one = stack.pop()
+    two = stack.pop()
+    stack.append(one+two)
+    return False
+
+def neg():
+    one = stack.pop()
+    stack.append(-1*one)
+    return False
+
+def swap():
+    one = stack.pop()
+    two = stack.pop()
+    stack.append(one)
+    stack.append(two)
+    return False
+
+def copy():
+    one = stack[-1]
+    stack.append(one)
+    return False
+
+def rot():
+    one = stack.pop()
+    two = stack.pop()
+    three = stack.pop()
+    stack.append(two)
+    stack.append(one)
+    stack.append(three)
+    return False
+
+def print_top():
+    print(stack[-1])
+    return False
+
+def print_pop():
+    one = stack.pop()
+    print(one)
+    return False
+
+def print_all():
+    print(stack)
+    return False
+
+def quit():
+    return True
 
 def initialize():
   print("Welcome to the test lang!!! Usefull commands are:")
@@ -23,36 +76,16 @@ def initialize():
   print("\t q: quit")
   print("\n")
 
-  commands["+"]  = ["+"]
-  commands["-"]  = ["-"]
-  commands["<>"] = ["<>"]
-  commands["cp"] = ["cp"]
-  commands["rt"] = ["rt"]
-  commands["p"]  = ["p"]
-  commands["p!"] = ["p!"]
-  commands["pa"] = ["pa"]
-  commands["q"]  = ["q"]
-  commands["."]  = ["."]
-
-  min_stack["+"]  = 2
-  min_stack["-"]  = 1
-  min_stack["<>"] = 2
-  min_stack["cp"] = 1
-  min_stack["rt"] = 3
-  min_stack["p"]  = 1
-  min_stack["p!"] = 1
-  min_stack["pa"] = 0
-  min_stack["q"]  = 0
-
-  returned["+"]  = 1
-  returned["-"]  = 1
-  returned["<>"] = 2
-  returned["cp"] = 2
-  returned["rt"] = 3
-  returned["p"]  = 1
-  returned["p!"] = 0
-  returned["pa"] = 0
-  returned["q"]  = 0
+  commands["+"]  = Command("+",  plus,           2, 1)
+  commands["-"]  = Command("-",  neg,            1, 1)
+  commands["<>"] = Command("<>", swap,           2, 2)
+  commands["cp"] = Command("cp", copy,           1, 2)
+  commands["rt"] = Command("rt", rot,            3, 3)
+  commands["p"]  = Command("p",  print_top,      1, 1)
+  commands["p!"] = Command("p!", print_pop,      1, 0)
+  commands["pa"] = Command("pa", print_all,      0, 0)
+  commands["q"]  = Command("q",  quit,           0, 0)
+  commands["."]  = Command(".",  define_command, 0, 0)
 
 def check_stack(n):
   good = len(stack) >= n
@@ -88,61 +121,18 @@ def define_command():
       need_len += max(0,(min_stack[com] - returned_to_stack))
       stack_len -= (min_stack[com] - returned[com])
       returned_to_stack = returned[com] + max(0,(returned_to_stack - min_stack[com]))
-  min_stack[to_define] = need_len
-  returned[to_define] = max(0, stack_len)
-  commands[to_define] = com_list
-
+  fn = lambda: any([do_command(com) for com in com_list])
+  commands[to_define] = Command(to_define, fn, need_len, max(0, stack_len))
 
 def do_command(com):
     time_to_leave = False
-    if com == "+":
-      if not check_stack(min_stack[com]): return time_to_leave
-      one = stack.pop()
-      two = stack.pop()
-      stack.append(one+two)
-    elif com == "-":
-      if not check_stack(min_stack[com]): return time_to_leave
-      one = stack.pop()
-      stack.append(-1*one)
-    elif com == "<>":
-      if not check_stack(min_stack[com]): return time_to_leave
-      one = stack.pop()
-      two = stack.pop()
-      stack.append(one)
-      stack.append(two)
-    elif com == "cp":
-      if not check_stack(min_stack[com]): return time_to_leave
-      one = stack[-1]
-      stack.append(one)
-    elif com == "rt":
-      if not check_stack(min_stack[com]): return time_to_leave
-      one = stack.pop()
-      two = stack.pop()
-      three = stack.pop()
-      stack.append(two)
-      stack.append(one)
-      stack.append(three)
-    elif com in list(map(str, range(100))):
-      stack.append(int(com))
-    elif com == "p":
-      if not check_stack(min_stack[com]): return time_to_leave
-      print(stack[-1])
-    elif com == "p!":
-      if not check_stack(min_stack[com]): return time_to_leave
-      one = stack.pop()
-      print(one)
-    elif com == "pa":
-      print(stack)
-    elif com == ".":
-      define_command()
-    elif com == "q":
-      time_to_leave = True
+    if com in list(map(str, range(100))):
+        stack.append(int(com))
     elif com in commands:
-      if not check_stack(min_stack[com]): return time_to_leave
-      for c in commands[com]:
-        time_to_leave = do_command(c)
+        if not check_stack(commands[com].min_stack): return time_to_leave
+        time_to_leave = commands[com].fn()
     else:
-      print("Unrecognized Command!!!")
+        print("Unrecognized Command!!!")
     return time_to_leave
 
 def main_loop():
@@ -151,7 +141,6 @@ def main_loop():
     com = input(prompt)
     time_to_leave = do_command(com)
     if time_to_leave: break
-
 
 def leave():
   print("Goodbye!")
